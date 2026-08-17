@@ -18,6 +18,13 @@
       libxi
       libxrandr
     ];
+    desktopItem = pkgs.makeDesktopItem {
+      name = "visual-diff";
+      desktopName = "Visual Diff";
+      comment = "Review asset and JSON diffs in Git repositories";
+      exec = "visual-diff";
+      categories = ["Development" "Graphics"];
+    };
   in {
     packages.${system}.default = pkgs.rustPlatform.buildRustPackage {
       pname = "visual-diff";
@@ -36,6 +43,8 @@
       nativeBuildInputs = with pkgs; [git makeWrapper pkg-config];
       buildInputs = runtimeLibraries;
       postFixup = ''
+        mkdir -p $out/share/applications
+        ln -s ${desktopItem}/share/applications/visual-diff.desktop $out/share/applications/
         wrapProgram $out/bin/visual-diff \
           --prefix PATH : ${pkgs.lib.makeBinPath [pkgs.git]} \
           --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeLibraries}
